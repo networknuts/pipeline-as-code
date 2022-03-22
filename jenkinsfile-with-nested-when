@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            when {
+                not {
+                    branch "master"
+                }
+            }
+            steps {
+                echo 'Building the application..when branch is NOT master'
+            
+            }
+        }
+        stage('Test') {
+            when {
+                allOf {
+                    branch "main"
+                    environment(name: "ENV", value: "production")                 
+                }
+            }
+            steps {
+                echo 'Testing the application..will run only when branch is main AND environment variable env has value of production'
+            }
+        }
+        stage('Deploy') {
+            when {
+                anyOf {
+                    branch "main"
+                    environment(name: "ENV", value: "production")                 
+                }
+            steps {
+                echo 'Deploying the application....will run only if branch is main OR environment variable env has value of production'
+            }
+        }
+        
+    }
+    
+    post{
+        always{
+            echo "========always========"
+        }
+        success{
+            echo "========pipeline executed successfully ========"
+        }
+        failure{
+            echo "========pipeline execution failed========"
+        }
+    }
+}
+
+#you can find all environment variables inside the jenkins - http//jenkins-server-ip/env-vars.html
