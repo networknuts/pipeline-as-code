@@ -14,11 +14,11 @@ pipeline {
         stage('Test') {
             when {
                expression {
-                    BRANCH_NAME == 'main' || BRANCH_NAME == 'master'
+                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
                }
             }
             steps {
-                echo 'Testing the application..will run only when branch is production'
+                echo 'Testing the application..will run only when branch is main or master'
             }
         }
         stage('Deploy') {
