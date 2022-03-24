@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    environment {
+        BIKE = "HARLEY DAVIDSON"
+        NAME = "Alok"
+    }
+
+    stages {
+        stage("Env Variables") {
+            environment {
+                NAME = "Aryan" // overrides pipeline level NAME env variable
+                BUILD_NUMBER = "2" // overrides the default BUILD_NUMBER
+            }
+
+            steps {
+                echo "BIKE = ${env.BIKE}" // prints "BIKE = HARLEY DAVIDSON"
+                echo "NAME = ${env.NAME}" // prints "NAME = Aryan"
+                echo "BUILD_NUMBER =  ${env.BUILD_NUMBER}" // prints "BUILD_NUMBER = 2"
+
+                script {
+                    env.SOMETHING = "1" // creates env.SOMETHING variable
+                }
+            }
+        }
+
+        stage("Override Variables") {
+            steps {
+                script {
+                    env.BIKE = "HONDA" // it can't override env.BIKE declared at the pipeline (or stage) level
+                    env.SOMETHING = "2" // it can override env variable created imperatively
+                }
+
+                echo "BIKE = ${env.BIKE}" // prints "BIKE = HARLEY DAVIDSON"
+                echo "SOMETHING = ${env.SOMETHING}" // prints "SOMETHING = 2"
+
+                withEnv(["BIKE=KAWASAKI"]) { // it can override any env variable
+                    echo "BIKE = ${env.BIKE}" // prints "BIKE = KAWASAKI"
+                }
+
+                withEnv(["BUILD_NUMBER=1"]) {
+                    echo "BUILD_NUMBER = ${env.BUILD_NUMBER}" // prints "BUILD_NUMBER = 1"
+                }
+            }
+        }
+    }
+}
