@@ -1,0 +1,91 @@
+=== STEP #1 ========
+
+Create a IAM user on AWS with either AdministrativeAccess or EC2FullAccess
+Generate its Access Key / Private Key
+
+=== STEP #2 ========
+
+Create a EC2 instance with Amazon Linux AMI (as it has aws cli pre-installed)
+Use "aws configure" - supply Access Key / Private Key, when asked
+
+Install Packer:
+
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+sudo yum -y install packer
+
+=== STEP #3 ========
+
+Create a directory - "mkdir jenkins-custom"
+
+Create a file - template.json, with these contents
+
+vim template.json
+----
+{
+    "variables" : {
+        "region" : "AWS REGION",
+        "aws_profile": "AWS PROFILE",
+        "source_ami" : "AMAZON LINUX AMI 2 ID",
+        "instance_type": "INSTANCE TYPE"
+    },
+    "builders" : [
+        {
+            "type" : "amazon-ebs",
+            "profile" : "{{user `aws_profile`}}",
+            "region" : "{{user `region`}}",
+            "instance_type" : "{{user `instance_type`}}",
+            "source_ami" : "{{user `source_ami`}}",
+            "ssh_username" : "ec2-user",
+            "ami_name" : "jenkins-master-2.204.1",
+            "ami_description" : "Amazon Linux Image with Jenkins Server",
+            "run_tags" : {
+                "Name" : "packer-builder"
+            }
+        }
+    ],
+    "provisioners" : [
+        {
+            "type" : "shell",
+            "script" : "./setup.sh",
+            "execute_command" : "sudo -E -S sh '{{ .Path }}'"
+        }
+    ]
+}
+
+---- FILE - template.json END HERE
+
+Also create a script.sh file in the same directory with these contents
+
+vim script.sh
+----
+#!/bin/bash
+
+echo "Install Jenkins stable release"
+yum remove -y java
+yum install -y java-1.8.0-openjdk
+wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+rpm --import http://pkg.jenkins.io/redhat-stable/jenkins.io.key
+yum install -y jenkins
+chkconfig jenkins on
+service jenkins start
+
+---- FILE script.sh ENDS HERE
+
+=== STEP #4 =======
+
+Validate the syntax:
+packer validate template.json
+packer inspect template.json
+
+
+Build the custom Jenkins image:
+packer build template.json
+
+=== STEP #5 =======
+
+Now you should see a custom AMI inside "AMI" tab inside EC2
+Create a EC2 instance using your custom AMI. That should bring Jenkins Pre-installed
+
+
+
