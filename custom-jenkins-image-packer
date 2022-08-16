@@ -1,0 +1,43 @@
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 0.0.2"
+      source  = "github.com/hashicorp/amazon"
+    }
+  }
+}
+
+source "amazon-ebs" "ubuntu" {
+  ami_name      = "learn-packer-ubuntu-aws"
+  instance_type = "t2.micro"
+  region        = "ap-south-1"
+  vpc_id        = "vpc-3345b25a"
+  source_ami_filter {
+    filters = {
+      name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
+      root-device-type    = "ebs"
+      virtualization-type = "hvm"
+    }
+    most_recent = true
+    owners      = ["099720109477"]
+  }
+  ssh_username = "ubuntu"
+}
+
+build {
+  name    = "my-custom-jenkins"
+  sources = [
+    "source.amazon-ebs.ubuntu"
+  ]
+
+  provisioner "shell" {
+    inline = [
+      "echo Installing Jenkins",
+      "sudo curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null",
+      "sudo echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null",
+      "sudo sudo apt-get update",
+      "sudo sudo apt-get install jenkins -y --allow-unauthenticated",
+      "sudo service jenkins start"
+    ]
+  }
+}
