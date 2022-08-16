@@ -55,9 +55,9 @@ vim template.json
 
 ---- FILE - template.json END HERE
 
-Also create a script.sh file in the same directory with these contents
+Also create a setup.sh file in the same directory with these contents
 
-vim script.sh
+vim setup.sh
 ----
 #!/bin/bash
 
