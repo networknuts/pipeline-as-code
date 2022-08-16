@@ -8,11 +8,12 @@ Generate its Access Key / Private Key
 Create a EC2 instance with Amazon Linux AMI (as it has aws cli pre-installed)
 Use "aws configure" - supply Access Key / Private Key, when asked
 
-Install Packer:
+Install Packer on Amazon Linux:
 
 sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
 sudo yum -y install packer
+packer  #to verify installation
 
 === STEP #3 ========
 
