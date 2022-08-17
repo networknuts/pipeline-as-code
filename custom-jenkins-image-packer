@@ -1,43 +1,29 @@
 packer {
   required_plugins {
     amazon = {
-      version = ">= 0.0.2"
+      version = ">= 1.0.0"
       source  = "github.com/hashicorp/amazon"
     }
   }
 }
 
-source "amazon-ebs" "ubuntu" {
-  ami_name      = "learn-packer-ubuntu-aws"
+source "amazon-ebs" "jenkins" {
+  ami_name      = "packer-custom-ubuntu-aws"
   instance_type = "t2.micro"
   region        = "ap-south-1"
   vpc_id        = "vpc-3345b25a"
-  source_ami_filter {
-    filters = {
-      name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
-    }
-    most_recent = true
-    owners      = ["099720109477"]
-  }
+  source_ami    = "ami-068257025f72f470d"
   ssh_username = "ubuntu"
 }
 
 build {
   name    = "my-custom-jenkins"
   sources = [
-    "source.amazon-ebs.ubuntu"
+    "source.amazon-ebs.jenkins"
   ]
 
   provisioner "shell" {
-    inline = [
-      "echo Installing Jenkins",
-      "sudo wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key |sudo gpg --dearmor -o /usr/share/keyrings/jenkins.gpg",
-      "sudo sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'",
-      "sudo sudo apt-get update",
-      "sudo sudo apt-get install jenkins -y",
-      "sudo systemctl start jenkins.service"
-    ]
+     script = "./setup.sh"
+     }
+       
   }
-}
