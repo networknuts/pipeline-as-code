@@ -8,12 +8,18 @@ packer {
 }
 
 source "amazon-ebs" "jenkins" {
-  ami_name      = "packer-custom-ubuntu-aws"
+  ami_name      = "jenkins_AWS_lab_{{timestamp}}"
   instance_type = "t2.micro"
   region        = "ap-south-1"
   vpc_id        = "vpc-3345b25a"
   source_ami    = "ami-068257025f72f470d"
   ssh_username = "ubuntu"
+  associate_public_ip_address = "true"
+  security_group_id = "sg-0d558f225e05c40b3"
+  subnet_id = "subnet-76da2b1f"
+  ssh_keypair_name = "winterindia"
+  ssh_private_key_file = "winterindia.pem"
+  
 }
 
 build {
@@ -23,7 +29,7 @@ build {
   ]
 
   provisioner "shell" {
-     script = "./setup.sh"
+     script = "./jenkins-setup.sh"
      }
        
   }
