@@ -24,6 +24,11 @@ source "amazon-ebs" "jenkins" {
   subnet_id = "subnet-76da2b1f"
   ssh_keypair_name = "winterindia"
   ssh_private_key_file = "winterindia.pem"
+  tags = {
+      Name = "Custom-Jenkins"
+      OS = "Ubuntu"
+      Release = "test"
+  }
   
 }
 
