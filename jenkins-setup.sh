@@ -6,5 +6,5 @@ sudo sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg
 sudo sudo apt-get update
 sudo apt install openjdk-8-jre -y
 sudo sudo apt-get install jenkins -y
-echo "PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/lib/jvm/java-8-openjdk-amd64/bin/" >> /etc/init.d/jenkins
+sudo echo "PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/lib/jvm/java-8-openjdk-amd64/bin/" >> /etc/init.d/jenkins
 sudo systemctl start jenkins.service
