@@ -38,3 +38,8 @@ build {
      }
        
   }
+  
+  #### packer init .
+  #### packer validate .
+  #### packer build .
+  #### <it will take around 8-10 minutes for the image to be ready>
